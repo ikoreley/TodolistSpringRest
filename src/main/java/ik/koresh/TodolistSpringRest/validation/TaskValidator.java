@@ -1,6 +1,7 @@
 package ik.koresh.TodolistSpringRest.validation;
 
-import ik.koresh.TodolistSpringRest.dto.TaskDTO;
+
+import ik.koresh.TodolistSpringRest.models.Task;
 import ik.koresh.TodolistSpringRest.services.TasksService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -19,14 +20,15 @@ public class TaskValidator implements Validator {
 
     @Override
     public boolean supports(Class<?> clazz) {
-        return TaskDTO.class.equals(clazz);
+        return Task.class.equals(clazz);
     }
 
+    //todo: for test
     @Override
     public void validate(Object target, Errors errors) {
-        TaskDTO taskDTO = (TaskDTO) target;
+        Task task = (Task) target;
 
-        if(tasksService.findOne(taskDTO.getDescription()).isPresent()){
+        if(tasksService.findOne(task.getDescription()).isPresent()){
             errors.rejectValue("description", "", "It's description exist already!");
         }
 

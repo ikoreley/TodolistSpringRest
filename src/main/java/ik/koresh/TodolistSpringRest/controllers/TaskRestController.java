@@ -49,10 +49,11 @@ public class TaskRestController {
         return converToTaskDTO(tasksService.findOneRest(id));
     }
 
+    //todo: метод для проверки taskValidator --- Branch удалить потом
     @PostMapping
-    public ResponseEntity<HttpStatus> create(@RequestBody  @Validated TaskDTO taskDTO,
+    public ResponseEntity<HttpStatus> create(@RequestBody  @Validated Task task,
                                              BindingResult bindingResult){
-        taskValidator.validate(taskDTO, bindingResult);
+        taskValidator.validate(task, bindingResult);
 
         if (bindingResult.hasErrors()){
             StringBuilder errorMsg = new StringBuilder();
@@ -68,7 +69,8 @@ public class TaskRestController {
             throw new TaskNotCreatedException(errorMsg.toString());
         }
 
-        tasksService.save(convertToTask(taskDTO));
+//        tasksService.save(convertToTask(taskDTO));
+        tasksService.save(task);
 
         return ResponseEntity.ok(HttpStatus.OK);
     }

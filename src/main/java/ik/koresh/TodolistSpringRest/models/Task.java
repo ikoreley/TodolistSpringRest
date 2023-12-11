@@ -1,19 +1,19 @@
 package ik.koresh.TodolistSpringRest.models;
 
 
+import ik.koresh.TodolistSpringRest.validation.annotation.DuplicateDescription;
 import ik.koresh.TodolistSpringRest.validation.annotation.StartSymbolUpperCase;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
+
 
 import java.time.LocalDateTime;
 
 
-@Setter
-@Getter
+@Data
 @Entity
 public class Task {
 

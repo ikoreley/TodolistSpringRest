@@ -18,7 +18,7 @@ public class TaskDTO {
     @NotEmpty(message = "Name should not be empty")
     @Size(min = 2, max = 30, message = "Description should be between 2 and 30 characters")
     @StartSymbolUpperCase
-    @DuplicateDescription
+//    @DuplicateDescription
     private String description;
 
     @Enumerated(EnumType.STRING)
