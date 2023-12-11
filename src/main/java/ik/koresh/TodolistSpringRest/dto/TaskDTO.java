@@ -1,32 +1,25 @@
-package ik.koresh.TodolistSpringRest.models;
+package ik.koresh.TodolistSpringRest.dto;
 
-
+import ik.koresh.TodolistSpringRest.models.Status;
+import ik.koresh.TodolistSpringRest.validation.annotation.DuplicateDescription;
 import ik.koresh.TodolistSpringRest.validation.annotation.StartSymbolUpperCase;
-import jakarta.persistence.*;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
 import java.time.LocalDateTime;
 
 
-@Setter
-@Getter
-@Entity
-public class Task {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
-
+@Data
+public class TaskDTO {
     @NotEmpty(message = "Name should not be empty")
     @Size(min = 2, max = 30, message = "Description should be between 2 and 30 characters")
     @StartSymbolUpperCase
-//    @DuplicateDescription //todo: not working
+    @DuplicateDescription
     private String description;
-
 
     @Enumerated(EnumType.STRING)
     private Status status;
@@ -34,17 +27,5 @@ public class Task {
     @Min(value = 0, message = "Age should be greater than 0")
     private int deadline;
 
-    @Column(name = "created_at")
     private LocalDateTime createdAt;
-
-    @Column(name = "updated_at")
-    private LocalDateTime updatedAt;
-
-    @Column(name = "create_who")
-    private String createdWho;
-
-
-    public Task() {}
-
-
 }

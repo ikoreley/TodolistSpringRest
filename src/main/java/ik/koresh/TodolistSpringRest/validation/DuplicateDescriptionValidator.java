@@ -14,6 +14,6 @@ public class DuplicateDescriptionValidator implements ConstraintValidator<Duplic
 
     @Override
     public boolean isValid(String value, ConstraintValidatorContext context) {
-        return tasksService.findOne(value) == null;
+        return tasksService.findOne(value).isEmpty();
     }
 }

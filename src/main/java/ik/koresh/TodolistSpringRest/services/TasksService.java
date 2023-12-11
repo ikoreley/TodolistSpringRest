@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -34,9 +35,8 @@ public class TasksService {
     }
 
     //todo: проверить работу
-    public Task findOne(String description){
-        Optional<Task> foundTask = tasksRepository.findByDescription(description);
-        return foundTask.orElse(null);
+    public Optional<Task> findOne(String description){
+        return tasksRepository.findByDescription(description);
     }
 
     public Task findOneRest(int id){
@@ -49,12 +49,19 @@ public class TasksService {
         if (task.getStatus()==null){
             task.setStatus(Status.EMPTY);
         }
+        enrichTask(task);
         tasksRepository.save(task);
+    }
+    private void enrichTask(Task task){
+        task.setCreatedAt(LocalDateTime.now());
+        task.setUpdatedAt(LocalDateTime.now());
+        task.setCreatedWho("ADMIN");
     }
 
     @Transactional
     public void update(int id, Task updateTask){
         updateTask.setId(id);
+        updateTask.setUpdatedAt(LocalDateTime.now());
         tasksRepository.save(updateTask);
     }
 

@@ -1,7 +1,7 @@
 package ik.koresh.TodolistSpringRest.controllers;
 
 
-
+import ik.koresh.TodolistSpringRest.dto.TaskDTO;
 import ik.koresh.TodolistSpringRest.models.Task;
 import ik.koresh.TodolistSpringRest.services.TasksService;
 import ik.koresh.TodolistSpringRest.util.TaskErrorResponse;
@@ -9,7 +9,8 @@ import ik.koresh.TodolistSpringRest.exception.TaskNotCreatedException;
 import ik.koresh.TodolistSpringRest.exception.TaskNotFoundException;
 
 
-
+import ik.koresh.TodolistSpringRest.validation.TaskValidator;
+import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
@@ -17,32 +18,41 @@ import org.springframework.validation.FieldError;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController // Controller + ResponseBody над каждым методом
 @RequestMapping("/todolist")
 public class TaskRestController {
 
+    private final TaskValidator taskValidator;
     private final TasksService tasksService;
+    private final ModelMapper modelMapper;
 
-    public TaskRestController(TasksService tasksService) {
+    public TaskRestController(TaskValidator taskValidator, TasksService tasksService, ModelMapper modelMapper1) {
+        this.taskValidator = taskValidator;
         this.tasksService = tasksService;
+        this.modelMapper = modelMapper1;
     }
 
     @GetMapping
-    public List<Task> getTodolist(){
-        return tasksService.findAll();
+    public List<TaskDTO> getTodolist(){
+        return tasksService.findAll().stream().
+                map(this::converToTaskDTO).
+                collect(Collectors.toList());
     }
 
     @GetMapping("/{id}")
-    public Task getTask(@PathVariable("id") int id){
-        return tasksService.findOneRest(id);
+    public TaskDTO getTask(@PathVariable("id") int id){
+        return converToTaskDTO(tasksService.findOneRest(id));
     }
 
     @PostMapping
-    public ResponseEntity<HttpStatus> create(@RequestBody  @Validated Task task,
+    public ResponseEntity<HttpStatus> create(@RequestBody  @Validated TaskDTO taskDTO,
                                              BindingResult bindingResult){
+        taskValidator.validate(taskDTO, bindingResult);
 
         if (bindingResult.hasErrors()){
             StringBuilder errorMsg = new StringBuilder();
@@ -58,7 +68,7 @@ public class TaskRestController {
             throw new TaskNotCreatedException(errorMsg.toString());
         }
 
-        tasksService.save(task);
+        tasksService.save(convertToTask(taskDTO));
 
         return ResponseEntity.ok(HttpStatus.OK);
     }
@@ -86,6 +96,14 @@ public class TaskRestController {
     public ResponseEntity<HttpStatus> delete(@PathVariable("id") int id){
         tasksService.delete(id);
         return ResponseEntity.ok(HttpStatus.OK);
+    }
+
+    private Task convertToTask(TaskDTO taskDTO) {
+        return modelMapper.map(taskDTO, Task.class);
+    }
+
+    private TaskDTO converToTaskDTO(Task task){
+        return modelMapper.map(task, TaskDTO.class);
     }
 
 }
